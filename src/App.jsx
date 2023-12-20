@@ -11,8 +11,19 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
+  //Retrieve all blogs
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
+  }, []);
+
+  //Check if a user is logged in
+  useEffect(() => {
+    const loggedBlogUser = window.localStorage.getItem("loggedBlogUser");
+    if (loggedBlogUser) {
+      const user = JSON.parse(loggedBlogUser);
+      setUser(user);
+      blogService.setToken(user.token);
+    }
   }, []);
 
   const handleLogin = async (event) => {
@@ -20,10 +31,13 @@ const App = () => {
     console.log(`Logging in with ${username} and ${password}`);
     try {
       const user = await loginService.login({ username, password });
+      window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       setUser(user);
       blogService.setToken(user.token);
+
       setUsername("");
       setPassword("");
+
       console.log(user);
     } catch (exception) {
       console.log("invalid credentials");
@@ -107,8 +121,24 @@ const App = () => {
   return (
     <div>
       {!user && loginForm()}
-      {user && <p>{user.name} logged in</p>}
-      {user && blogForm()}
+      {user && (
+        <>
+          <p>
+            {user.username} logged in
+            <button
+              type="submit"
+              onClick={() => {
+                window.location.reload();
+                window.localStorage.clear();
+              }}
+            >
+              Logout
+            </button>
+          </p>
+
+          {blogForm()}
+        </>
+      )}
       <h2>blogs</h2>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
