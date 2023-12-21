@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import LoginForm from "./components/LoginForm";
+import BlogForm from "./components/BlogForm";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -64,33 +66,6 @@ const App = () => {
     }
   };
 
-  const loginForm = () => {
-    return (
-      <form onSubmit={handleLogin}>
-        <h3>Login to form</h3>
-        <div>
-          username:
-          <input
-            type="text"
-            value={username}
-            name="username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password:
-          <input
-            type="password"
-            value={password}
-            name="password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    );
-  };
-
   const blogForm = () => {
     return (
       <form onSubmit={handleBlogForm}>
@@ -120,7 +95,15 @@ const App = () => {
 
   return (
     <div>
-      {!user && loginForm()}
+      {!user && (
+        <LoginForm
+          username={username}
+          password={password}
+          handleSubmit={handleLogin}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+        />
+      )}
       {user && (
         <>
           <p>
@@ -136,7 +119,13 @@ const App = () => {
             </button>
           </p>
 
-          {blogForm()}
+          <BlogForm
+            title={title}
+            url={url}
+            handleTitleChange={({ target }) => setTitle(target.value)}
+            handleUrlChange={({ target }) => setUrl(target.value)}
+            handleBlogForm={handleBlogForm}
+          />
         </>
       )}
       <h2>blogs</h2>
