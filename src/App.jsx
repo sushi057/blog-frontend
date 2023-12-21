@@ -4,14 +4,11 @@ import blogService from "./services/blogs";
 import loginService from "./services/login";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
+import Togglable from "./components/Togglable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState("");
-  const [url, setUrl] = useState("");
 
   //Retrieve all blogs
   useEffect(() => {
@@ -28,11 +25,10 @@ const App = () => {
     }
   }, []);
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    console.log(`Logging in with ${username} and ${password}`);
+  const handleLogin = async (loginCredentials) => {
+    console.log(`Logging in with`);
     try {
-      const user = await loginService.login({ username, password });
+      const user = await loginService.login(loginCredentials);
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       setUser(user);
       blogService.setToken(user.token);
@@ -46,37 +42,18 @@ const App = () => {
     }
   };
 
-  const handleBlogForm = async (event) => {
-    event.preventDefault();
-    console.log(`Adding blog`);
-    try {
-      const newBlog = {
-        title: title,
-        url: url,
-        author: user.name,
-      };
-
-      const response = await blogService.create(newBlog);
-      console.log(response);
-
-      // setTitle("");
-      // setUrl("");
-    } catch (exception) {
-      console.log("invalid token");
-    }
+  const createBlog = async (blogObject) => {
+    const newBlogObject = {
+      ...blogObject,
+      author: user.name,
+    };
+    await blogService.create(newBlogObject);
+    setBlogs(blogs.concat(newBlogObject));
   };
 
   return (
     <div>
-      {!user && (
-        <LoginForm
-          username={username}
-          password={password}
-          handleSubmit={handleLogin}
-          handleUsernameChange={({ target }) => setUsername(target.value)}
-          handlePasswordChange={({ target }) => setPassword(target.value)}
-        />
-      )}
+      {!user && <LoginForm handleLogin={handleLogin} />}
       {user && (
         <>
           <p>
@@ -91,14 +68,9 @@ const App = () => {
               Logout
             </button>
           </p>
-
-          <BlogForm
-            title={title}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-            handleBlogForm={handleBlogForm}
-          />
+          <Togglable>
+            <BlogForm createBlog={createBlog} />
+          </Togglable>
         </>
       )}
       <h2>blogs</h2>
