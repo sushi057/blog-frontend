@@ -33,16 +33,12 @@ const App = () => {
   }, []);
 
   const handleLogin = async (loginCredentials) => {
-    console.log(`Logging in with`);
+    console.log("Logging in with");
     try {
       const user = await loginService.login(loginCredentials);
       window.localStorage.setItem("loggedBlogUser", JSON.stringify(user));
       setUser(user);
       blogService.setToken(user.token);
-
-      setUsername("");
-      setPassword("");
-
       console.log(user);
     } catch (exception) {
       console.log("invalid credentials");
