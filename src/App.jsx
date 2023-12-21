@@ -12,8 +12,15 @@ const App = () => {
 
   //Retrieve all blogs
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, []);
+    blogService.getAll().then((blogs) => {
+      blogs.sort((a, b) => {
+        const upvotesA = a.upvotes || 0;
+        const upvotesB = b.upvotes || 0;
+        return upvotesB - upvotesA;
+      });
+      setBlogs(blogs);
+    });
+  }, [blogs]);
 
   //Check if a user is logged in
   useEffect(() => {
@@ -46,9 +53,22 @@ const App = () => {
     const newBlogObject = {
       ...blogObject,
       author: user.name,
+      upvotes: 0,
     };
     await blogService.create(newBlogObject);
     setBlogs(blogs.concat(newBlogObject));
+  };
+
+  const handleUpvotes = async (id, blogObject) => {
+    const updatedBlog = { ...blogObject, upvotes: blogObject.upvotes + 1 };
+    const response = await blogService.update(id, updatedBlog);
+    console.log("response", response);
+    console.log("apps log");
+  };
+
+  const handleDelete = async (id) => {
+    const response = await blogService.remove(id);
+    console.log(response);
   };
 
   return (
@@ -75,7 +95,12 @@ const App = () => {
       )}
       <h2>blogs</h2>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleUpvotes={handleUpvotes}
+          handleDelete={handleDelete}
+        />
       ))}
     </div>
   );
