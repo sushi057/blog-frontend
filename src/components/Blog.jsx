@@ -24,6 +24,7 @@ const Blog = ({ blog, handleUpvotes, handleDelete }) => {
   return (
     <div>
       <button
+        id="view-btn"
         onClick={() => {
           setShowDetails(!showDetails);
         }}
@@ -41,11 +42,15 @@ const Blog = ({ blog, handleUpvotes, handleDelete }) => {
           <p className="title">{blog.title}</p>
           <p>{blog.url}</p>
           <p>{blog.author}</p>
-          <p>
-            {blog.upvotes ? blog.upvotes : 0}
-            <button onClick={handleClick}>Upvote</button>
-          </p>
-          <button onClick={handleDeleteButton}>Delete</button>
+          <div>
+            <p id="upvote-count">{blog.upvotes ? blog.upvotes : 0}</p>
+            <button id="upvote-btn" onClick={handleClick}>
+              Upvote
+            </button>
+          </div>
+          <button id="delete-btn" onClick={handleDeleteButton}>
+            Delete
+          </button>
         </div>
       )}
     </div>
