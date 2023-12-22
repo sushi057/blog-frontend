@@ -38,11 +38,11 @@ const Blog = ({ blog, handleUpvotes, handleDelete }) => {
 
       {showDetails && (
         <div style={blogStyle}>
-          <p>{blog.title}</p>
+          <p className="title">{blog.title}</p>
           <p>{blog.url}</p>
           <p>{blog.author}</p>
           <p>
-            {blog.upvotes}
+            {blog.upvotes ? blog.upvotes : 0}
             <button onClick={handleClick}>Upvote</button>
           </p>
           <button onClick={handleDeleteButton}>Delete</button>
